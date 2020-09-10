@@ -92,6 +92,10 @@ func checkHost() {
 		return
 	}
 
+	hasher2 := sha256.New()
+	var hash2 []byte
+	var remoteReportContent []byte
+
 	// 3. get remote report file
 	gf := &gitlab.GetFileOptions{
 		Ref: gitlab.String("master"),
@@ -99,6 +103,24 @@ func checkHost() {
 	remoteFileContent, _, err := gitClient.RepositoryFiles.GetFile(repoName, host + "-report.txt", gf)
 	if err != nil {
 		log.Println("could not get remote file:", err)
+	} else {
+		remoteFileContentDecoded, err := base64.StdEncoding.DecodeString(remoteFileContent.Content)
+		if err != nil {
+			log.Println("could not decode base64 content:", err.Error())
+		}
+		ioutil.WriteFile("C:\\Local\\remoteFileContentDecoded.txt", remoteFileContentDecoded, 0777)
+
+		remoteReportContent = []byte(getCipherList(strings.ReplaceAll(string(remoteFileContentDecoded), "\r", "")))
+
+		hasher2.Write(remoteReportContent)
+		hash2 = hasher2.Sum(nil)
+	}
+
+
+	if string(localReportContent) != "" && string(hash1) == string(hash2) {
+		log.Println("report contents matching!")
+	} else {
+		log.Println("report contents NOT matching, uploading...")
 		cf := &gitlab.CreateFileOptions{
 			Branch:        gitlab.String("master"),
 			Content:       gitlab.String(string(o)),
@@ -106,28 +128,13 @@ func checkHost() {
 		}
 		_, _, err := gitClient.RepositoryFiles.CreateFile(repoName, host + "-report.txt", cf)
 		if err != nil {
-			log.Fatal("could not create file:", err)
+			log.Fatal(err)
 		}
-	}
-	remoteFileContentDecoded, err := base64.StdEncoding.DecodeString(remoteFileContent.Content)
-	if err != nil {
-		log.Println("could not decode base64 content:", err.Error())
-	}
-	ioutil.WriteFile("C:\\Local\\remoteFileContentDecoded.txt", remoteFileContentDecoded, 0777)
 
-	remoteReportContent := []byte(getCipherList(strings.ReplaceAll(string(remoteFileContentDecoded), "\r", "")))
-
-	hasher2 := sha256.New()
-	hasher2.Write(remoteReportContent)
-	hash2 := hasher2.Sum(nil)
-
-	if string(localReportContent) != "" && string(hash1) == string(hash2) {
-		log.Println("report contents matching!")
-	} else {
-		log.Println("report contents NOT matching!")
-		ioutil.WriteFile("C:\\Local\\content1.txt", localReportContent, 0777)
-		ioutil.WriteFile("C:\\Local\\content2.txt", remoteReportContent, 0777)
+		//ioutil.WriteFile("C:\\Local\\content1.txt", localReportContent, 0777)
+		//ioutil.WriteFile("C:\\Local\\content2.txt", remoteReportContent, 0777)
 	}
+	log.Println("done\n")
 }
 
 func getCipherList(reportContent string) string {
