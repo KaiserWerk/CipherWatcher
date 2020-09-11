@@ -3,7 +3,7 @@ A service tool written in Go to monitor changes in the cipher suites of a select
 This is a working prototype.
 
 #### What is does
-1. use nmap to get a report on the cipher suite for the given host:port combination.
+1. Use nmap to get a report on the cipher suite for the given host:port combination.
 2. Check if a report for this host exists in the Gitlab repository.
     1. If it does not, create it.
     2. If it does: check if contents match (no changes in the cipher suite occurred).
@@ -28,7 +28,7 @@ to start.
 
 ## Usage
 
-Run ``go run . -help`` ti display possible command line parameters.
+Run ``go run . -help`` to display possible command line parameters.
 
 Currently, you can use the following parameters to start the tool:
 ```
