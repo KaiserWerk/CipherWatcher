@@ -45,8 +45,7 @@ Currently, you can use the following parameters to start the tool:
 ```
 Parameters marked with (*) are required.
 
-Once started, the app will run continuously until you stop execution, either
-by pressing __Ctrl + C__ or by entering __shutdown__ and then pressing __Enter__.
+Once started, the app will run continuously until you stop execution.
 
 ## Further thoughts
 Maybe sending out notifications when changes occur might be a nifty idea.
