@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/xanzy/go-gitlab"
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
@@ -27,7 +26,7 @@ var (
 )
 
 func main() {
-	flag.StringVar(&nmapPath, "nmap", "nmap", "The path to the nmap executable (can be left blank on default, if gloablly available)")
+	flag.StringVar(&nmapPath, "nmap", "nmap", "The path to the nmap executable (can be left on default, if globally available)")
 	flag.StringVar(&hostport, "host", "localhost:80", "The host with port you want to scan")
 	flag.StringVar(&repoName, "reponame", "vendor/repo", "The full name of the Git repository you want to use")
 	flag.StringVar(&gitlabToken, "gitlabtoken", "123abc", "The token to authenticate with Gitlab")
@@ -74,7 +73,7 @@ func checkHost() {
 	log.Println("Running command", c.String())
 	o, err := c.Output()
 	if err != nil {
-		log.Println("coud not get nmap output:", err.Error())
+		log.Println("could not get nmap output:", err.Error())
 		return
 	}
 	localReportContent := []byte(getCipherList(strings.ReplaceAll(string(o), "\r", "")))
@@ -108,7 +107,6 @@ func checkHost() {
 		if err != nil {
 			log.Println("could not decode base64 content:", err.Error())
 		}
-		ioutil.WriteFile("C:\\Local\\remoteFileContentDecoded.txt", remoteFileContentDecoded, 0777)
 
 		remoteReportContent = []byte(getCipherList(strings.ReplaceAll(string(remoteFileContentDecoded), "\r", "")))
 
@@ -130,28 +128,20 @@ func checkHost() {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		//ioutil.WriteFile("C:\\Local\\content1.txt", localReportContent, 0777)
-		//ioutil.WriteFile("C:\\Local\\content2.txt", remoteReportContent, 0777)
 	}
 	log.Println("done\n")
 }
 
 func getCipherList(reportContent string) string {
 	l := strings.Split(reportContent, "\n\r\n")
-	//log.Println(l)
 	if len(l) > 1 {
-		log.Println("There is more than 1 block")
 		return l[1]
 	}
 
 	l2 := strings.Split(reportContent, "\n\n")
 	if len(l2) > 1 {
-		log.Println("There is more than 1 block (2)")
 		return l2[1]
 	}
 
-	log.Println("There is not more than 1 block")
-	log.Println(reportContent)
 	return ""
 }
