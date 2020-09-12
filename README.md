@@ -6,7 +6,7 @@ This is a working prototype.
 1. Use nmap to get a report on the cipher suite for the given host:port combination.
 2. Check if a report for this host exists in the Gitlab repository.
     1. If it does not, create it.
-    2. If it does: check if contents match (no changes in the cipher suite occurred).
+    2. If it does: check if contents match
         1. If contents match, do nothing (since nothing changed)
         2. If contents do not match, update the report file in the repository with 
         the content of the new report.
